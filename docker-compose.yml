@@ -1,0 +1,63 @@
+version: '3.8'
+services:
+  coworker-ai:
+    build: .
+    container_name: coworker-ai
+    volumes:
+      - .:/app
+    depends_on:
+      - chromadb
+      - redis
+      - nginx
+    environment:
+      - CHROMADB_HOST=chromadb
+      - REDIS_HOST=redis
+    ports:
+      - "8010:8010"
+    networks:
+      - coworker-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://coworker-ai:8010" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    volumes:
+      - ./chromadb:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE
+    ports:
+      - "8020:8000"
+    networks:
+      - coworker-net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - coworker-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/usr/share/nginx/html
+    ports:
+      - "8095:80"
+    networks:
+      - coworker-net
+
+volumes:
+  redis_data:
+  static_volume:
+
+networks:
+  coworker-net:

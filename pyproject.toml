@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "coworker-ai"
+version = "0.1.0"
+description = "Helpful AI assistant for my daily routines"
+authors = ["Yevhen Dyachenko"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "src", from = "."}
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain = "^0.2.5"
+chromadb-client = "^0.5.4.dev0"
+redis = "^5.0.6"
+
+fastapi = "^0.111.0"
+pypika = "^0.48.9"
+mesop = "^0.9.1"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+# Create run script for the fastapi server
+[tool.poetry.scripts]
+#app = "uvicorn src.main:app --reload"
