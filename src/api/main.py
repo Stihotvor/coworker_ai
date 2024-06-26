@@ -3,22 +3,12 @@ import string
 from typing import cast
 
 import chromadb
-import numpy as np
 import redis
 from chromadb import EmbeddingFunction, Documents, Embeddings
-from chromadb.utils.embedding_functions import HuggingFaceEmbeddingServer
 from fastapi import FastAPI, HTTPException
-from mesop import MesopApp
 
 app = FastAPI()
 
-# Create your Mesop application
-mesop_app = MesopApp()
-
-# Define your Mesop routes and components here
-
-# Mount the Mesop app to a specific route
-app.mount("/mesop", mesop_app)
 
 class LMStudioEmbeddingServer(EmbeddingFunction[Documents]):
     def __init__(self, url: str):
@@ -64,6 +54,12 @@ async def startup_event():
         chroma_collection = chroma_client.create_collection("test-collection", embedding_function=huggingface_ef)
     except Exception as e:
         print(f"Unable to connect to ChromaDB or create/get collection: {e}")
+
+
+# Create healthcheck endpoint
+@app.get("/healthcheck/")
+def healthcheck():
+    return {"status": "ok"}
 
 
 @app.get("/test_redis")

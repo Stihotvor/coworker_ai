@@ -5,7 +5,12 @@ LABEL authors="Yevhen Dyachenko"
 RUN apt-get update &&  \
     apt-get install -y curl  \
     && apt-get clean \
-    && pip install poetry
+
+# Update pip
+RUN python -m pip install --upgrade pip
+
+# Install poetry
+RUN python -m pip install poetry
 
 # Set the working directory to /app
 WORKDIR /app
@@ -16,8 +21,3 @@ COPY . /app
 # Install dependencies using poetry
 RUN poetry config virtualenvs.create false \
   && poetry install --no-dev
-
-# Set the working directory to /app/src
-WORKDIR /app
-
-ENTRYPOINT ["uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8010"]

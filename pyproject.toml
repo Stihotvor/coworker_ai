@@ -17,11 +17,7 @@ redis = "^5.0.6"
 
 fastapi = "^0.111.0"
 pypika = "^0.48.9"
-mesop = "^0.9.1"
+gradio = "^4.36.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-# Create run script for the fastapi server
-[tool.poetry.scripts]
-#app = "uvicorn src.main:app --reload"
