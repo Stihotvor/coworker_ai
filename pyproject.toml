@@ -11,13 +11,12 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.12"
-langchain = "^0.2.5"
-chromadb-client = "^0.5.4.dev0"
 redis = "^5.0.6"
-
 fastapi = "^0.111.0"
-pypika = "^0.48.9"
-gradio = "^4.36.1"
+gradio = "^4.37.2"
+llama-index-vector-stores-chroma = "^0.1.9"
+llama-index = "^0.10.50"
+llama-index-llms-lmstudio = "^0.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

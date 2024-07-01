@@ -22,6 +22,11 @@ services:
     environment:
       - CHROMADB_HOST=chromadb
       - REDIS_HOST=redis
+      - ENV GRADIO_SERVER_NAME="0.0.0.0"
+      - GRADIO_EXAMPLES_CACHE=/app/.gradio/cache/
+      - GRADIO_TEMP_DIR=/app/.gradio/tmp/
+      - GRADIO_SHARE=true
+      - HOME=/app
     ports:
       - "8010:8010"
     networks:

@@ -4,6 +4,7 @@ LABEL authors="Yevhen Dyachenko"
 # Install curl and poetry
 RUN apt-get update &&  \
     apt-get install -y curl  \
+    && apt-get install -y build-essential \
     && apt-get clean \
 
 # Update pip
