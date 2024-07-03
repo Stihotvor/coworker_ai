@@ -9,6 +9,15 @@ In order to run the project locally You will need:
 - Run `docker-compose up`
 - Visit localhost:8010
 
+## Directory structure
+The code base is located in `src` directory. You can find there all the main domains of the project:
+- UI
+- API
+- Role
+- Storage
+
+If You need to play with the system prompts, You can find them in `src/role/prompt_repository/system` directory.
+
 ## Tests
 In order to run the tests, you need to connect to the coworker-ai service and type in the next command:
 - for unit tests (marked as `unit` in the `pytest.ini` file)
