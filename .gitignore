@@ -351,3 +351,5 @@ $RECYCLE.BIN/
 *.lnk
 
 .local/
+
+*.sqlite3
