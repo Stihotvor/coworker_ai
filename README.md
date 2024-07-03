@@ -1,4 +1,13 @@
 # coworker_ai
+## Description
+This repository contains the code for the coworker-ai service. CoworkerAI is an AI assistant, which helps to track bugs,
+features and whole projects using Jira tasks and company documentation.
+
+## How to run PoC
+In order to run the project locally You will need:
+- LMStudio server running on `localhost:1234` with Your favourite model (I recommend Mistral one)
+- Run `docker-compose up`
+- Visit localhost:8010
 
 ## Tests
 In order to run the tests, you need to connect to the coworker-ai service and type in the next command:
