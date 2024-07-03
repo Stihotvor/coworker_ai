@@ -19,3 +19,4 @@ class SystemPrompt(Enum):
     System prompts for the LLM.
     """
     DEFAULT = collect_prompt("default")
+    COWORKER = collect_prompt("coworker")

@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import Optional
 
 
 class TaskStatus(Enum):
@@ -16,6 +17,8 @@ class Task:
     id: str
     title: str
     status: TaskStatus
+    responsible_person: Optional[str] = None
+    context: Optional[str] = None
 
 
 @dataclass
@@ -30,11 +33,12 @@ class RelatedTasks:
 class Document:
     id: str
     title: str
+    context: str
 
 
 @dataclass
 class RelatedDocuments:
-    document_1: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data"))
-    document_2: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data"))
-    document_3: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data"))
-    document_4: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data"))
+    document_1: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))
+    document_2: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))
+    document_3: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))
+    document_4: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))

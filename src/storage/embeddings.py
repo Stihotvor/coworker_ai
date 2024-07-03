@@ -1,7 +1,7 @@
 from llama_index.llms.lmstudio import LMStudio
 from llama_index.core.base.llms.types import ChatMessage, MessageRole
 
-from src.role.prompt_repository.manager import SystemPrompt
+from src.role.prompt_repository.prompt_builder import SystemPrompt
 
 llm = LMStudio(
     model_name="Meta-Llama-3-8B-Instruct-IQ3_M",
