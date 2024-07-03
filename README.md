@@ -7,7 +7,7 @@ features and whole projects using Jira tasks and company documentation.
 In order to run the project locally You will need:
 - LMStudio server running on `localhost:1234` with Your favourite model (I recommend Mistral one)
 - Run `docker-compose up`
-- Visit localhost:8010
+- Visit `localhost:8010`
 
 ## Directory structure
 The code base is located in `src` directory. You can find there all the main domains of the project:
