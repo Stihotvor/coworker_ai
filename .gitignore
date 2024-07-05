@@ -353,3 +353,4 @@ $RECYCLE.BIN/
 .local/
 
 *.sqlite3
+/data/

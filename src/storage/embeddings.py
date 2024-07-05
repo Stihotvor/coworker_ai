@@ -1,7 +1,6 @@
 from llama_index.llms.lmstudio import LMStudio
-from llama_index.core.base.llms.types import ChatMessage, MessageRole
 
-from src.role.prompt_repository.prompt_builder import SystemPrompt
+from src.storage.custom_embedding_clients.lm_studio_client import LMStudioEmbedding
 
 llm = LMStudio(
     model_name="Meta-Llama-3-8B-Instruct-IQ3_M",
@@ -11,40 +10,27 @@ llm = LMStudio(
     timeout=300
 )
 
-response = llm.complete("Hey there, what is 2+2?")
-print(str(response))
-
-# use llm.stream_complete
-response = llm.stream_complete("What is 7+3?")
-for r in response:
-    print(r.delta, end="")
-
-#
-# messages = [
-#     ChatMessage(
-#         role=MessageRole.SYSTEM,
-#         content=SystemPrompt.DEFAULT.value,
-#     ),
-#     ChatMessage(
-#         role=MessageRole.USER,
-#         content="What is the significance of the number 42?",
-#     ),
-# ]
-#
-# response = llm.stream_chat(messages=messages)
-# for r in response:
-#     print(r.delta, end="")
-
 
 from openai import OpenAI
 
 client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
 
 
-def get_embedding(text, model="your-lm-studio-embedding-model"):
+def get_embedding(text, model="all-MiniLM-L6-v2-ggml-model-f16"):
     text = text.replace("\n", " ")
     return client.embeddings.create(input=[text], model=model).data[0].embedding
 
 
 result = get_embedding("What is the significance of the number 42?")
+print(len(result))
 print(result)
+
+
+
+embed_model = LMStudioEmbedding(
+    base_url="http://localhost:1234/v1",
+    model_name="all-MiniLM-L6-v2-ggml-model-f16"
+)
+pass_embedding = embed_model.get_general_text_embedding("What is the significance of the number 42?")
+print(len(pass_embedding))
+print(pass_embedding)
