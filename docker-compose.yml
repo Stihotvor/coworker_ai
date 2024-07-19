@@ -21,7 +21,9 @@ services:
       - redis
     environment:
       - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8000
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
     ports:
       - "8010:8010"
     networks:
@@ -43,7 +45,7 @@ services:
       - PERSIST_DIRECTORY=/chroma/chroma
       - ANONYMIZED_TELEMETRY=FALSE
     ports:
-      - "8020:8000"
+#      - "8020:8000"
     networks:
       - coworker-net
 
@@ -54,6 +56,8 @@ services:
       - redis_data:/data
     networks:
       - coworker-net
+    ports:
+#      - "6379:6379"
 
 volumes:
   redis_data:

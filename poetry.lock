@@ -1910,6 +1910,21 @@ llama-index-core = ">=0.10.7,<0.11.0"
 llama-parse = ">=0.4.0,<0.5.0"
 
 [[package]]
+name = "llama-index-storage-kvstore-redis"
+version = "0.1.5"
+description = "llama-index kvstore redis integration"
+optional = false
+python-versions = "<4.0,>=3.8.1"
+files = [
+    {file = "llama_index_storage_kvstore_redis-0.1.5-py3-none-any.whl", hash = "sha256:9a27643da4dfaa7cbcfe7d10799afd9e41f4576bc0f3228d279d2e04b76ef5f9"},
+    {file = "llama_index_storage_kvstore_redis-0.1.5.tar.gz", hash = "sha256:697c4ae00d481ec04764748b48b871f70653b29c9c14a818028f3c92d75583f4"},
+]
+
+[package.dependencies]
+llama-index-core = ">=0.10.1,<0.11.0"
+redis = ">=5.0.1,<6.0.0"
+
+[[package]]
 name = "llama-index-vector-stores-chroma"
 version = "0.1.9"
 description = "llama-index vector_stores chroma integration"
@@ -4694,4 +4709,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "3931bd13a4295f6dbe3407923998a1c2ed57b962feb342b0508472a120d327bd"
+content-hash = "7b45880c8267977c842cfbd33ee9db5de0b638903ebb304c28d8c0ff2305a876"

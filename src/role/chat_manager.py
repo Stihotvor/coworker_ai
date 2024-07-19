@@ -3,11 +3,50 @@ from typing import Type, Callable, Iterator
 from src.role.llm_client import LLMClient
 from src.role.prompt_repository.prompt_builder import SystemPrompt
 from src.settings import LLM_CONFIG
-from src.storage.chats import ChatRepository
+from src.storage.chat_repository import ChatRepository
 from src.ui.datastructures import RelatedTasks, RelatedDocuments, TaskStatus
 
 
 class ChatManager:
+    """
+    ChatManager class is responsible for managing the chat between the user and the AI assistant. It processes the
+    user query, generates the response from the AI assistant, and updates the chat history. It also provides the
+    functionality to list relevant tasks and documents to the user.
+
+    Usage:
+        chat = ChatManager(ui_info_log, ui_error_log)
+
+        # Predict the response for the user query
+        response = chat.predict("What do You know about task FITO-2311?")
+
+        # Stream the chat response
+        for chunk in response:
+            # Print the whole chat with one more chunk
+            print(chunk)
+
+        # Call the property only after the response is generated
+        for task in chat.related_tasks:
+            print(task.title)
+
+        # Call the property only after the response is generated
+        for doc in chat.related_documents:
+            print(doc.title)
+
+        # Generate the task summary
+        response = chat.generate_task_summary("FITO-2311")
+
+        # Stream the chat response
+        for chunk in response:
+            # Print the whole chat with one more chunk
+            print(chunk)
+
+        # Resets the chat history, related tasks, and related documents
+        chat.reset_chat_history()
+    """
+
+
+
+class OldChatManager:
     def __init__(self,
                  ui_info_log: Callable,
                  ui_error_log: Callable,

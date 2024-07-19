@@ -3,9 +3,13 @@ import logging
 import redis
 from fastapi import FastAPI, HTTPException
 
+from src.settings import init_settings
+
 log = logging.getLogger("apiLogger.main")
 
 app = FastAPI()
+
+init_settings()
 
 
 # Create healthcheck endpoint

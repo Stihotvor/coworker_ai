@@ -7,7 +7,7 @@ from llama_index.core.constants import DEFAULT_EMBED_BATCH_SIZE
 
 
 class LMStudioEmbedding(BaseEmbedding):
-    """Class for LMStudio embeddings."""
+    """Class for LMStudio embeddings. Only if you need to generate embeddings manually."""
 
     base_url: str = Field(description="Base url the model is hosted by LMStudio")
     model_name: str = Field(description="The Ollama model to use.")
