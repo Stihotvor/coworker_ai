@@ -20,6 +20,7 @@ fastapi = "^0.111.0"
 pytest = "^8.2.2"
 chromadb = "^0.5.3"
 llama-index-storage-kvstore-redis = "^0.1.5"
+llama-index-retrievers-bm25 = "^0.2.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
