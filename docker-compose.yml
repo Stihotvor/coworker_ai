@@ -44,7 +44,7 @@ services:
       - IS_PERSISTENT=TRUE
       - PERSIST_DIRECTORY=/chroma/chroma
       - ANONYMIZED_TELEMETRY=FALSE
-    ports:
+#    ports:
 #      - "8020:8000"
     networks:
       - coworker-net
@@ -56,7 +56,7 @@ services:
       - redis_data:/data
     networks:
       - coworker-net
-    ports:
+#    ports:
 #      - "6379:6379"
 
 volumes:
