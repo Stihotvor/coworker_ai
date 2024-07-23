@@ -5,7 +5,7 @@ from llama_index.core.base.llms.types import ChatMessage
 
 from src.storage.chat_repository import ChatRepository
 from src.storage.vector_db import VectorStoreIndexManager
-from src.ui.datastructures import RelatedTasks, RelatedDocuments
+from src.ui.datastructures import RelatedTasks, RelatedDocuments, Task, TaskStatus, Document
 
 log = logging.getLogger("storageLogger.chat_manager")
 
@@ -106,11 +106,34 @@ class ChatManager:
             chat_history=converted_history
         )
         log.debug("LLM response is generated")
-        log.debug(f"LLM response source nodes: {llm_response.source_nodes}")
+
+        related_task_names = set()
+        related_doc_names = set()
+
         for node in llm_response.source_nodes:
-            log.debug(f"Node: {node}")
-            log.debug(f"Node: {node.metadata}")
-        log.debug(f"LLM response sources: {llm_response.sources}")
+            log.debug(f"Node document_type: {node.metadata["document_type"]}")
+            if node.metadata["document_type"] == "tickets":
+                related_task_names.add(node.metadata["file_name"])
+            elif node.metadata["document_type"] == "documentation":
+                related_doc_names.add(node.metadata["file_name"])
+
+        # Truncate the sets to 4 items only
+        related_task_names = list(related_task_names)[:4]
+        related_doc_names = list(related_doc_names)[:4]
+
+        # Update the related tasks 1-4, make sure if there is not enough related tasks, it is skipped
+        for i, file_name in enumerate(related_task_names):
+            related_task = Task(id=file_name, title=file_name.split(".")[0], status=TaskStatus.NA)
+            setattr(related_tasks, f"task_{i + 1}", related_task)
+
+        task_titles = [getattr(related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
+
+        # Update the related documents 1-4
+        for i, file_name in enumerate(related_doc_names):
+            related_document = Document(id=file_name, title=file_name.split(".")[0], context="N/A")
+            setattr(related_documents, f"document_{i + 1}", related_document)
+
+        doc_titles = [getattr(related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
 
         log.debug("Yielding the response")
         for chunk in llm_response.response_gen:
@@ -157,11 +180,9 @@ class ChatManager:
 
     def _append_assistant_response_to_chat_history(self, chunk: str) -> None:
         """Append the assistant response to the chat history."""
-        log.debug(f"Appending the assistant response to the chat history: {chunk}")
         chat_history = self.chat_repository.get_chat_history()
         chat_history[-1][1] += chunk
         self.chat_repository.update_chat_history(chat_history)
-        log.debug(f"Assistant response is appended to the chat history: {chunk}")
 
     def _convert_chat_history_to_chat_messages(self, chat_history: list[list[str]]) -> list[ChatMessage]:
         """Convert the chat history to the chat messages."""

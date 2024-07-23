@@ -7,6 +7,8 @@ from llama_index.core.ingestion import IngestionCache, IngestionPipeline
 from llama_index.storage.kvstore.redis import RedisKVStore
 from llama_index.vector_stores.chroma import ChromaVectorStore
 
+from src.storage.custom_transformations import TextCleaner, DocumentTypeToMetadata
+
 log = logging.getLogger("storageLogger.data_ingestion")
 
 DOCUMENT_PATHS = {
@@ -47,10 +49,22 @@ class DataIngestionManager:
 
     def _run_ingestion_pipeline(self, documents: List[Document], document_type: str) -> None:
         log.debug(f"Running ingestion pipeline for {document_type}")
+        transformations = [
+            TextCleaner(),
+            DocumentTypeToMetadata(document_type=document_type),
+            self._settings.text_splitter,
+            self._settings.embed_model,
+            # TitleExtractor()
+        ]
+
         pipeline = self._ingestion_pipeline_cls(
+            transformations=transformations,
             vector_store=self._vector_store,
             cache=self._ingest_cache,
         )
+
+        # self._ingest_cache.clear()
+
         # Print collection to logs
         log.debug(f"Collection: {pipeline.vector_store.collection_name}")
 

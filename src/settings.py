@@ -31,18 +31,7 @@ def init_text_splitter(settings: Settings) -> None:
     )
 
 
-def init_transformations(settings: Settings) -> None:
-    settings.transformations = [
-        TextCleaner(),
-        DocumentTypeToMetadata(),
-        settings.text_splitter,
-        settings.embed_model,
-        # TitleExtractor()
-    ]
-
-
 def init_settings(settings: Settings = Settings) -> None:
     init_llm_config(settings)
     init_embedding_config(settings)
     init_text_splitter(settings)
-    init_transformations(settings)
