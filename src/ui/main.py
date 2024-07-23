@@ -52,6 +52,7 @@ def build_ui(chat_manager_cls: Type["ChatManager"] = ChatManager):
                     document_4_btn = gr.Button(f"4. {r_docs.document_4.title[:30]}")
                     document_4_btn.click(fn=chat_manager.generate_document_summary, inputs=[document_4_btn])
 
+                reindex_doc_btn = gr.Button("Reindex documents")
         inputs = [user_query]
         outputs = [user_query, chat, task_1_btn, task_2_btn, task_3_btn, task_4_btn,
                    document_1_btn, document_2_btn, document_3_btn, document_4_btn]
@@ -59,5 +60,6 @@ def build_ui(chat_manager_cls: Type["ChatManager"] = ChatManager):
         user_query.submit(chat_manager.predict, inputs=inputs, outputs=outputs)
         submit_btn.click(chat_manager.predict, inputs=inputs, outputs=outputs)
         clear_btn.click(chat_manager.reset_chat_history)
+        reindex_doc_btn.click(chat_manager.reindex_documents)
 
     return blocks

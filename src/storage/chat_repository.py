@@ -13,17 +13,13 @@ class ChatRepository:
     Data schema:
         {
             "user_session_id_1": [
-                ["user", "Hi, how are you?"],
-                ["assistant", "I'm fine, thank you. How can I help you?"],
-                ["user", "I need help with the ticket 1234."],
-                ["assistant", "Let me check that for you."]
+                ["Hello, what is FRK", "FRK is the abbreviation for the First Responder Kit."],
+                ["Where can I find the FRK documentation?", "You can find the FRK documentation at..."]
             ],
             "user_session_id_2": [
-                ["user", "Hi, how are you?"],
-                ["assistant", "I'm fine, thank you. How can I help you?"],
-                ["user", "I need help with the ticket 1234."],
-                ["assistant", "Let me check that for you."]
-            ],
+                ["Hello, what is FRK", "FRK is the abbreviation for the First Responder Kit."],
+                ["Where can I find the FRK documentation?", "You can find the FRK documentation at..."]
+            ]
         }
 
     """

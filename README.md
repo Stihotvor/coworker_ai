@@ -5,6 +5,8 @@ features and whole projects using Jira tasks and company documentation.
 
 ## How to run PoC
 In order to run the project locally You will need:
+- create a directory `data/tickets/` and add tickets in plain text format, one ticket per file
+- create a directory `data/documentation/` and add documentation in plain text format, one page per file
 - LMStudio server running on `localhost:1234` with Your favourite model (I recommend Mistral one)
 - Run `docker-compose up`
 - Visit `localhost:8010`
