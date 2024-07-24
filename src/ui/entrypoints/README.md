@@ -1,0 +1,1 @@
+Current directory stores multiple different ways to run the application.

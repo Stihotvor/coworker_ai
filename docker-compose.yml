@@ -1,0 +1,66 @@
+services:
+  coworker-ai:
+    build: .
+    entrypoint: [
+      "poetry",
+      "-vvv",
+      "run",
+      "uvicorn",
+      "src.ui.entrypoints.mounted_app:app",
+      "--reload",
+      "--host",
+      "0.0.0.0",
+      "--port",
+      "8010"
+    ]
+    container_name: coworker-ai
+    volumes:
+      - .:/app
+    depends_on:
+      - chromadb
+      - redis
+    environment:
+      - CHROMADB_HOST=chromadb
+      - CHROMADB_PORT=8000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    ports:
+      - "8010:8010"
+    networks:
+      - coworker-net
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://coworker-ai:8010/healthcheck/",
+              "&&", "curl", "-f", "http://coworker-ai:8010/healthcheck-redis/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    volumes:
+      - ./chromadb:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE
+#    ports:
+#      - "8020:8000"
+    networks:
+      - coworker-net
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - coworker-net
+#    ports:
+#      - "6379:6379"
+
+volumes:
+  redis_data:
+
+networks:
+  coworker-net:
