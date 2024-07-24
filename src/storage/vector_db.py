@@ -25,14 +25,13 @@ class VectorStoreIndexManager:
         self._collection_name = "docs_and_tickets_collection"
         self._db_client = self._get_db_client(vector_db)
         self._data_ingest_manager_cls = data_ingest_manager_cls
-        self._vector_store_index_cls = vector_store_index_cls
         self._vector_store_cls = vector_store_cls
         self._storage_context_cls = storage_context_cls
         log.info("VectorStoreIndexManager initialized successfully")
 
     def get_index(self) -> "VectorStoreIndex":
         log.info("Getting the index")
-        return self._get_index()
+        return self._get_index(vector_store_index_cls=VectorStoreIndex)
 
     def get_chat_engine(self) -> "BaseChatEngine":
         """
@@ -115,9 +114,9 @@ class VectorStoreIndexManager:
         log.debug("Getting the storage context")
         return self._storage_context_cls.from_defaults(vector_store=self._get_vector_store())
 
-    def _get_index(self):
+    def _get_index(self, vector_store_index_cls: Type["VectorStoreIndex"]):
         log.debug("Getting the index")
-        return self._vector_store_index_cls.from_vector_store(
+        return vector_store_index_cls.from_vector_store(
             vector_store=self._get_vector_store(),
             storage_context=self._get_storage_context()
         )
