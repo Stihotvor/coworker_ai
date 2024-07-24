@@ -84,7 +84,6 @@ class ChatManager:
         self._related_documents = RelatedDocuments()
         log.info("Related documents are reset")
 
-
     def reindex_documents(self):
         """Reindex the documents."""
         log.info("Re-indexing the documents")
@@ -103,13 +102,10 @@ class ChatManager:
         # RFE: Add user session parameter
         # RFE: What to do between predicts? Reset the documents? Will it search again? Should I supply the nodes?
         # Pull out the task and doc titles
-        task_titles = [getattr(self._related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
-
-        doc_titles = [getattr(self._related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
-
         if not user_query:
             self._ui_error_log("Please, provide a valid query.")
-            return "", self.chat_repository.get_chat_history(), *task_titles, *doc_titles
+            return ("", self.chat_repository.get_chat_history(), *self.get_related_tasks_titles(),
+                    *self.get_related_documents_titles())
 
         self._add_user_query_to_chat_history(user_query)
 
@@ -142,33 +138,26 @@ class ChatManager:
             related_task = Task(id=file_name, title=file_name.split(".")[0], status=TaskStatus.NA)
             setattr(self._related_tasks, f"task_{i + 1}", related_task)
 
-        task_titles = [getattr(self._related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
-
         # Update the related documents 1-4
         for i, file_name in enumerate(related_doc_names):
             related_document = Document(id=file_name, title=file_name.split(".")[0], context="N/A")
             setattr(self._related_documents, f"document_{i + 1}", related_document)
 
-        doc_titles = [getattr(self._related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
-
         log.debug("Yielding the response")
         for chunk in llm_response.response_gen:
             self._append_assistant_response_to_chat_history(chunk)
-            yield "", self.chat_repository.get_chat_history(), *task_titles, *doc_titles
+            yield ("", self.chat_repository.get_chat_history(), *self.get_related_tasks_titles(),
+                   *self.get_related_documents_titles())
 
         log.info("Response is yielded")
 
-    @property
-    def related_tasks(self) -> "RelatedTasks":
-        """List of related tasks."""
-        # TODO
-        return RelatedTasks()
+    def get_related_tasks_titles(self) -> list[str]:
+        """List of related tasks (titles)."""
+        return [getattr(self._related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
 
-    @property
-    def related_documents(self) -> "RelatedDocuments":
-        """List of related documents."""
-        # TODO
-        return RelatedDocuments()
+    def get_related_documents_titles(self) -> list[str]:
+        """List of related documents (titles)."""
+        return [getattr(self._related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
 
     def generate_task_summary(self, task_title_with_no: str):
         """Generate the task summary for the given task title."""
