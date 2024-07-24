@@ -58,6 +58,8 @@ class ChatManager:
         self._ui_error_log = ui_error_log
         self.chat_repository = chat_repository_cls()
         self._store = vector_store_index_cls()
+        self._related_tasks = RelatedTasks()
+        self._related_documents = RelatedDocuments()
 
         log.info("ChatManager is initialized")
 
@@ -68,6 +70,20 @@ class ChatManager:
         log.debug("Resetting the chat history, related tasks, and related documents")
         self.chat_repository.reset_chat_history()
         self._ui_info_log("Chat history is reset")
+
+    def reset_related_tasks(self):
+        """Reset the related tasks."""
+        # TODO: Add user session parameter
+        log.info("Resetting the related tasks")
+        self._related_tasks = RelatedTasks()
+        log.info("Related tasks are reset")
+
+    def reset_related_documents(self):
+        """Reset the related documents."""
+        log.info("Resetting the related documents")
+        self._related_documents = RelatedDocuments()
+        log.info("Related documents are reset")
+
 
     def reindex_documents(self):
         """Reindex the documents."""
@@ -83,13 +99,13 @@ class ChatManager:
         and the chat history.
         """
         log.info(f"Predicting the response for the user query: {user_query[:10]}")
-        # TODO: Add real documents and tasks
+        # TODO: Add real documents and tasks to cache and clean after the chat cleaning
+        # RFE: Add user session parameter
+        # RFE: What to do between predicts? Reset the documents? Will it search again? Should I supply the nodes?
         # Pull out the task and doc titles
-        related_tasks = RelatedTasks()
-        task_titles = [getattr(related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
+        task_titles = [getattr(self._related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
 
-        related_documents = RelatedDocuments()
-        doc_titles = [getattr(related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
+        doc_titles = [getattr(self._related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
 
         if not user_query:
             self._ui_error_log("Please, provide a valid query.")
@@ -124,16 +140,16 @@ class ChatManager:
         # Update the related tasks 1-4, make sure if there is not enough related tasks, it is skipped
         for i, file_name in enumerate(related_task_names):
             related_task = Task(id=file_name, title=file_name.split(".")[0], status=TaskStatus.NA)
-            setattr(related_tasks, f"task_{i + 1}", related_task)
+            setattr(self._related_tasks, f"task_{i + 1}", related_task)
 
-        task_titles = [getattr(related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
+        task_titles = [getattr(self._related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
 
         # Update the related documents 1-4
         for i, file_name in enumerate(related_doc_names):
             related_document = Document(id=file_name, title=file_name.split(".")[0], context="N/A")
-            setattr(related_documents, f"document_{i + 1}", related_document)
+            setattr(self._related_documents, f"document_{i + 1}", related_document)
 
-        doc_titles = [getattr(related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
+        doc_titles = [getattr(self._related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
 
         log.debug("Yielding the response")
         for chunk in llm_response.response_gen:
