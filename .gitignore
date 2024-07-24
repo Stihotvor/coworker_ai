@@ -705,3 +705,13 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+/.local/
+/.config/
+/chromadb/
+/flagged/
+/=4.37
+/.idea/coworker_ai.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/vcs.xml
