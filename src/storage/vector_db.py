@@ -75,8 +75,14 @@ class VectorStoreIndexManager:
 
     def _remove_documents(self):
         log.debug("Removing documents")
-        self._db_client.delete_collection(self._collection_name)
-        log.debug("Documents removed successfully")
+        try:
+            self._db_client.delete_collection(self._collection_name)
+            log.debug("Documents removed successfully")
+        except Exception as error:
+            if error.args[0] != f"Collection {self._collection_name} does not exist.":
+                raise
+
+            log.debug(f"Collection {self._collection_name} not found")
 
     def _load_documents(self):
         log.debug("Loading documents")
