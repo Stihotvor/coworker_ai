@@ -28,6 +28,8 @@ services:
       - "8010:8010"
     networks:
       - coworker-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://coworker-ai:8010/healthcheck/",
               "&&", "curl", "-f", "http://coworker-ai:8010/healthcheck-redis/" ]
