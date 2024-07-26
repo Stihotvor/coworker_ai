@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Type
+from typing import Type, Literal
 
 import chromadb
 from chromadb import ClientAPI
@@ -8,6 +8,7 @@ from llama_index.core import StorageContext, VectorStoreIndex
 from llama_index.core.chat_engine.types import ChatMode, BaseChatEngine
 from llama_index.vector_stores.chroma import ChromaVectorStore
 
+from src.role.prompt_repository.prompt_builder import SystemPrompt
 from src.storage.data_ingestion import DataIngestionManager
 
 log = logging.getLogger("storageLogger.vector_db")
@@ -19,7 +20,8 @@ class VectorStoreIndexManager:
                  vector_store_cls: Type["ChromaVectorStore"] = ChromaVectorStore,
                  vector_store_index_cls: Type["VectorStoreIndex"] = VectorStoreIndex,
                  storage_context_cls: Type["StorageContext"] = StorageContext,
-                 data_ingest_manager_cls: Type["DataIngestionManager"] = DataIngestionManager
+                 data_ingest_manager_cls: Type["DataIngestionManager"] = DataIngestionManager,
+                 system_prompt: Type["SystemPrompt"] = SystemPrompt
                  ):
         log.info("Initializing VectorStoreIndexManager")
         self._collection_name = "docs_and_tickets_collection"
@@ -28,6 +30,7 @@ class VectorStoreIndexManager:
         self._vector_store_index_cls = vector_store_index_cls
         self._vector_store_cls = vector_store_cls
         self._storage_context_cls = storage_context_cls
+        self._system_prompt = system_prompt
         log.info("VectorStoreIndexManager initialized successfully")
 
     def get_index(self) -> "VectorStoreIndex":
@@ -51,13 +54,9 @@ class VectorStoreIndexManager:
         log.info("Getting the chat engine")
         # TODO: Add all the necessary parameters to the method
 
-        # TODO: Add context template
-        context_template = None
-
         index = self.get_index()
         return index.as_chat_engine(
-            system_prompt="Always answer in rhymes.",
-            context_template=context_template,
+            system_prompt=self._system_prompt.COWORKER.value,
             chat_mode=ChatMode.CONTEXT,
             streaming=True,
             filters=None,
