@@ -21,4 +21,4 @@ COPY . /app
 
 # Install dependencies using poetry
 RUN poetry config virtualenvs.create false \
-  && poetry install --no-dev
+  && poetry install

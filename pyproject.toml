@@ -12,15 +12,17 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.12"
 redis = "^5.0.6"
-gradio = "^4.37.2"
+gradio = "^6.20.0"
 llama-index-vector-stores-chroma = "^0.1.9"
 llama-index = "^0.10.50"
 llama-index-llms-lmstudio = "^0.1.0"
-fastapi = "^0.111.0"
-pytest = "^8.2.2"
+fastapi = "^0.139.0"
+pytest = "^9.1.1"
 chromadb = "^0.5.3"
 llama-index-storage-kvstore-redis = "^0.1.5"
 llama-index-retrievers-bm25 = "^0.2.0"
+tokenizers = "^0.23.1"
+packaging = ">=24.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
@@ -32,7 +34,7 @@ uvicorn_server = "src.ui.entrypoints.mounted_command:app"
 
 # Add pytest configuration
 [tool.pytest.ini_options]
-addopts = "-v --cov=src --cov-report=term-missing"
+addopts = "-v"
 testpaths = ["tests"]
 markers = [
     "unit: mark a test as a unit test",

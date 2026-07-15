@@ -718,3 +718,4 @@ cython_debug/
 
 # User-specific stuff
 /data/
+opencode.json
