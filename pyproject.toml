@@ -18,7 +18,7 @@ llama-index = "^0.14.24"
 llama-index-llms-lmstudio = "^0.6.0"
 fastapi = "^0.141.1"
 chromadb = "^1.5.9"
-llama-index-storage-kvstore-redis = "^0.6.0"
+llama-index-storage-kvstore-redis = "^0.5.1"
 llama-index-retrievers-bm25 = "^0.8.0"
 
 [tool.poetry.group.dev.dependencies]
