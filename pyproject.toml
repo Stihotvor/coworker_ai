@@ -12,15 +12,18 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.12"
 redis = "^5.0.6"
-gradio = "^4.37.2"
-llama-index-vector-stores-chroma = "^0.1.9"
-llama-index = "^0.10.50"
-llama-index-llms-lmstudio = "^0.1.0"
-fastapi = "^0.111.0"
-pytest = "^8.2.2"
-chromadb = "^0.5.3"
-llama-index-storage-kvstore-redis = "^0.1.5"
-llama-index-retrievers-bm25 = "^0.2.0"
+gradio = "^6.26.0"
+llama-index-vector-stores-chroma = "^0.6.0"
+llama-index = "^0.14.24"
+llama-index-llms-lmstudio = "^0.6.0"
+fastapi = "^0.141.1"
+chromadb = "^1.5.9"
+llama-index-storage-kvstore-redis = "^0.5.1"
+llama-index-retrievers-bm25 = "^0.8.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.1.1"
+pytest-cov = "^5.0.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
