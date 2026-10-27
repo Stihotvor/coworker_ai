@@ -1,0 +1,60 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 24.0.0
+    hooks:
+      - id: black
+        name: Black Formatter
+        language_version: python3.12
+        args: [--line-length=88]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        name: Flake8 Linter
+        language_version: python3.12
+        args: [--max-line-length=88, --max-complexity=10, --ignore=E203,W503]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.0
+    hooks:
+      - id: isort
+        name: isort Import Sorter
+        language_version: python3.12
+        args: [--profile=black, --line-length=88]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        name: mypy Type Checker
+        language_version: python3.12
+        args: [--python-version=3.12, --warn-return-any, --warn-unused-configs, --disallow-untyped-defs, --disallow-incomplete-defs, --check-untyped-defs]
+        additional_dependencies:
+          - types-redis
+          - types-requests
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.8
+    hooks:
+      - id: bandit
+        name: Bandit Security Scanner
+        language_version: python3.12
+        args: [-ll, -ii]
+        exclude: tests/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+      - id: end-of-file-fixer
+        name: Fix End of Files
+      - id: check-yaml
+        name: Check YAML
+      - id: check-added-large-files
+        name: Check for Large Files
+        args: [--maxkb=1024]
+      - id: debug-statements
+        name: Debug Statement Checker
+        language_version: python3.12
