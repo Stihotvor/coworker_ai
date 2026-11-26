@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Type
+from typing import Any, Optional, Type
 
 import redis
 
@@ -23,15 +23,21 @@ class ChatRepository:
         }
 
     """
-    def __init__(self, cache_client_cls: Type["redis.Redis"] = redis.Redis):
-        self._client = self.get_cache_client(cache_cls=cache_client_cls)
 
-    def get_cache_client(self, cache_cls: Type["redis.Redis"]) -> "redis.Redis":
+    def __init__(self, cache_client_cls: Optional[Type[Any]] = None):
+        self._client: Any = self.get_cache_client(
+            cache_cls=cache_client_cls or redis.Redis
+        )
+
+    def get_cache_client(self, cache_cls: Optional[Type[Any]] = None) -> Any:
+        client_cls = cache_cls or redis.Redis
+        redis_host = os.getenv("REDIS_HOST")
+        redis_port = os.getenv("REDIS_PORT")
         connection_kwargs = {
-            "host": os.getenv("REDIS_HOST"),
-            "port": int(os.getenv("REDIS_PORT"))
+            "host": redis_host,
+            "port": int(redis_port) if redis_port else 6379,
         }
-        return cache_cls(**connection_kwargs)
+        return client_cls(**connection_kwargs)  # type: ignore[call-overload]
 
     def get_chat_history(self, user_session_id: str = "single_user") -> list[list[str]]:
         """Fetch the chat history for the given user session id."""
@@ -40,10 +46,12 @@ class ChatRepository:
             return json.loads(result)
         return []
 
-    def update_chat_history(self, chat_history: list[list[str]], user_session_id: str = "single_user"):
+    def update_chat_history(
+        self, chat_history: list[list[str]], user_session_id: str = "single_user"
+    ):
         """Update the chat history for the given user session id."""
-        chat_history = json.dumps(chat_history)
-        self._client.set(user_session_id, chat_history)
+        serialized = json.dumps(chat_history)
+        self._client.set(user_session_id, serialized)
 
     def reset_chat_history(self, user_session_id: str = "single_user"):
         """Reset the chat history for the given user session id."""

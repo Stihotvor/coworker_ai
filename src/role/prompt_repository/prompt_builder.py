@@ -2,7 +2,9 @@ from enum import Enum
 from typing import Literal
 
 
-def collect_prompt(file_name: str, prompt_type: Literal["system", "user"] = "system") -> str:
+def collect_prompt(
+    file_name: str, prompt_type: Literal["system", "user"] = "system"
+) -> str:
     """
     Collect the prompt from the .md file. Please, supply file_name without the extension.
     """
@@ -18,5 +20,6 @@ class SystemPrompt(Enum):
     """
     System prompts for the LLM.
     """
+
     DEFAULT = collect_prompt("default")
     COWORKER = collect_prompt("coworker")

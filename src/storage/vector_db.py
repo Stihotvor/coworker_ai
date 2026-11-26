@@ -1,11 +1,10 @@
 import logging
 import os
-from typing import Type, Literal
+from typing import Any, Optional, Type
 
 import chromadb
-from chromadb import ClientAPI
 from llama_index.core import StorageContext, VectorStoreIndex
-from llama_index.core.chat_engine.types import ChatMode, BaseChatEngine
+from llama_index.core.chat_engine.types import BaseChatEngine, ChatMode
 from llama_index.vector_stores.chroma import ChromaVectorStore
 
 from src.role.prompt_repository.prompt_builder import SystemPrompt
@@ -15,22 +14,23 @@ log = logging.getLogger("storageLogger.vector_db")
 
 
 class VectorStoreIndexManager:
-    def __init__(self,
-                 vector_db: "chromadb" = chromadb,
-                 vector_store_cls: Type["ChromaVectorStore"] = ChromaVectorStore,
-                 vector_store_index_cls: Type["VectorStoreIndex"] = VectorStoreIndex,
-                 storage_context_cls: Type["StorageContext"] = StorageContext,
-                 data_ingest_manager_cls: Type["DataIngestionManager"] = DataIngestionManager,
-                 system_prompt: Type["SystemPrompt"] = SystemPrompt
-                 ):
+    def __init__(
+        self,
+        vector_db: Any = None,
+        vector_store_cls: Optional[Type[Any]] = None,
+        vector_store_index_cls: Optional[Type[Any]] = None,
+        storage_context_cls: Optional[Type[Any]] = None,
+        data_ingest_manager_cls: Optional[Type[Any]] = None,
+        system_prompt: Optional[Type[Any]] = None,
+    ):
         log.info("Initializing VectorStoreIndexManager")
         self._collection_name = "docs_and_tickets_collection"
-        self._db_client = self._get_db_client(vector_db)
-        self._data_ingest_manager_cls = data_ingest_manager_cls
-        self._vector_store_index_cls = vector_store_index_cls
-        self._vector_store_cls = vector_store_cls
-        self._storage_context_cls = storage_context_cls
-        self._system_prompt = system_prompt
+        self._db_client = self._get_db_client(vector_db or chromadb)
+        self._data_ingest_manager_cls = data_ingest_manager_cls or DataIngestionManager
+        self._vector_store_index_cls = vector_store_index_cls or VectorStoreIndex
+        self._vector_store_cls = vector_store_cls or ChromaVectorStore
+        self._storage_context_cls = storage_context_cls or StorageContext
+        self._system_prompt = system_prompt or SystemPrompt
         log.info("VectorStoreIndexManager initialized successfully")
 
     def get_index(self) -> "VectorStoreIndex":
@@ -63,7 +63,7 @@ class VectorStoreIndexManager:
             similarity_top_k=8,
             vector_store_kwargs={
                 "where": None,
-            }
+            },
         )
 
     def reindex_documents(self):
@@ -86,8 +86,10 @@ class VectorStoreIndexManager:
 
     def _load_documents(self):
         log.debug("Loading documents")
-        data_ingest_manager = self._data_ingest_manager_cls(vector_store=self._get_vector_store(),
-                                                            cache_collection=self._collection_name)
+        data_ingest_manager = self._data_ingest_manager_cls(
+            vector_store=self._get_vector_store(),
+            cache_collection=self._collection_name,
+        )
 
         for document_type in ["tickets", "documentation"]:
             log.debug(f"Loading {document_type} documents")
@@ -95,11 +97,12 @@ class VectorStoreIndexManager:
 
         log.debug("Documents loaded successfully")
 
-    def _get_db_client(self, vector_db: "chromadb" = chromadb) -> "ClientAPI":
+    def _get_db_client(self, vector_db: Any = None) -> Any:
         log.debug("Getting the vector db client")
         chroma_host = os.getenv("CHROMADB_HOST")
         chroma_port = os.getenv("CHROMADB_PORT")
-        return vector_db.HttpClient(host=chroma_host, port=chroma_port)
+        client_cls = vector_db or chromadb
+        return client_cls.HttpClient(host=chroma_host, port=chroma_port)
 
     def _get_or_create_collection(self):
         log.debug(f"Getting or creating the collection: {self._collection_name}")
@@ -112,11 +115,13 @@ class VectorStoreIndexManager:
 
     def _get_storage_context(self):
         log.debug("Getting the storage context")
-        return self._storage_context_cls.from_defaults(vector_store=self._get_vector_store())
+        return self._storage_context_cls.from_defaults(
+            vector_store=self._get_vector_store()
+        )
 
     def _get_index(self):
         log.debug("Getting the index")
         return self._vector_store_index_cls.from_vector_store(
             vector_store=self._get_vector_store(),
-            storage_context=self._get_storage_context()
+            storage_context=self._get_storage_context(),
         )

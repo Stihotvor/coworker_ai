@@ -1,8 +1,13 @@
 """Tests for datastructures module."""
 
-import pytest
 from src.role.datastructures import LLMConfig
-from src.ui.datastructures import Task, TaskStatus, Document, RelatedTasks, RelatedDocuments
+from src.ui.datastructures import (
+    Document,
+    RelatedDocuments,
+    RelatedTasks,
+    Task,
+    TaskStatus,
+)
 
 
 class TestLLMConfig:
@@ -15,7 +20,7 @@ class TestLLMConfig:
             max_tokens=100,
             temperature=0.5,
             stream=True,
-            completions_url="http://test.com/completions"
+            completions_url="http://test.com/completions",
         )
         assert config.model_name == "test-model"
         assert config.max_tokens == 100
@@ -30,7 +35,7 @@ class TestLLMConfig:
             max_tokens=200,
             temperature=0.7,
             stream=False,
-            completions_url="http://another.com/completions"
+            completions_url="http://another.com/completions",
         )
         assert config.model_name == "another-model"
         assert config.max_tokens == 200
@@ -45,14 +50,14 @@ class TestLLMConfig:
             max_tokens=100,
             temperature=0.5,
             stream=True,
-            completions_url="http://test.com"
+            completions_url="http://test.com",
         )
         config2 = LLMConfig(
             model_name="model",
             max_tokens=100,
             temperature=0.5,
             stream=True,
-            completions_url="http://test.com"
+            completions_url="http://test.com",
         )
         assert config1 == config2
 
@@ -63,14 +68,14 @@ class TestLLMConfig:
             max_tokens=100,
             temperature=0.5,
             stream=True,
-            completions_url="http://test.com"
+            completions_url="http://test.com",
         )
         config2 = LLMConfig(
             model_name="model2",
             max_tokens=100,
             temperature=0.5,
             stream=True,
-            completions_url="http://test.com"
+            completions_url="http://test.com",
         )
         assert config1 != config2
 
@@ -85,7 +90,7 @@ class TestTask:
             title="Test Task",
             status=TaskStatus.TO_DO,
             responsible_person="test-user",
-            context="Test context"
+            context="Test context",
         )
         assert task.id == "TASK-0001"
         assert task.title == "Test Task"
@@ -95,11 +100,7 @@ class TestTask:
 
     def test_task_creation_minimal(self):
         """Test Task creation with minimal fields."""
-        task = Task(
-            id="TASK-0001",
-            title="Test Task",
-            status=TaskStatus.NA
-        )
+        task = Task(id="TASK-0001", title="Test Task", status=TaskStatus.NA)
         assert task.id == "TASK-0001"
         assert task.title == "Test Task"
         assert task.status == TaskStatus.NA
@@ -114,7 +115,7 @@ class TestTask:
             TaskStatus.DEVELOPED,
             TaskStatus.TESTED,
             TaskStatus.RELEASED,
-            TaskStatus.NA
+            TaskStatus.NA,
         ]
         for status in statuses:
             task = Task(id="1", title="test", status=status)
@@ -126,11 +127,7 @@ class TestDocument:
 
     def test_document_creation(self):
         """Test Document creation."""
-        doc = Document(
-            id="DOC-0001",
-            title="Test Document",
-            context="Test content"
-        )
+        doc = Document(id="DOC-0001", title="Test Document", context="Test content")
         assert doc.id == "DOC-0001"
         assert doc.title == "Test Document"
         assert doc.context == "Test content"
@@ -153,11 +150,8 @@ class TestRelatedTasks:
         """Test RelatedTasks with custom values."""
         task1 = Task(id="TASK-0001", title="Task 1", status=TaskStatus.TO_DO)
         task2 = Task(id="TASK-0002", title="Task 2", status=TaskStatus.IN_PROGRESS)
-        
-        related = RelatedTasks(
-            task_1=task1,
-            task_2=task2
-        )
+
+        related = RelatedTasks(task_1=task1, task_2=task2)
         assert related.task_1.id == "TASK-0001"
         assert related.task_2.id == "TASK-0002"
         assert related.task_3.id == "TASK-0000"  # Default
@@ -181,11 +175,8 @@ class TestRelatedDocuments:
         """Test RelatedDocuments with custom values."""
         doc1 = Document(id="DOC-0001", title="Doc 1", context="Content 1")
         doc2 = Document(id="DOC-0002", title="Doc 2", context="Content 2")
-        
-        related = RelatedDocuments(
-            document_1=doc1,
-            document_2=doc2
-        )
+
+        related = RelatedDocuments(document_1=doc1, document_2=doc2)
         assert related.document_1.id == "DOC-0001"
         assert related.document_2.id == "DOC-0002"
         assert related.document_3.id == "DOC-0000"  # Default

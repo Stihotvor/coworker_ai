@@ -23,7 +23,7 @@ def healthcheck():
 def test_redis():
     log.debug("Redis connection test endpoint hit")
     try:
-        r = redis.Redis(host='redis', port=6379, db=0)
+        r = redis.Redis(host="redis", port=6379, db=0)
         r.ping()
         return {"status": "ok"}
     except redis.exceptions.ConnectionError:

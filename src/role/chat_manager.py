@@ -1,11 +1,17 @@
 import logging
-from typing import Type, Callable, Iterator
+from typing import Any, Callable, Iterator, Optional, Type
 
 from llama_index.core.base.llms.types import ChatMessage
 
 from src.storage.chat_repository import ChatRepository
 from src.storage.vector_db import VectorStoreIndexManager
-from src.ui.datastructures import RelatedTasks, RelatedDocuments, Task, TaskStatus, Document
+from src.ui.datastructures import (
+    Document,
+    RelatedDocuments,
+    RelatedTasks,
+    Task,
+    TaskStatus,
+)
 
 log = logging.getLogger("storageLogger.chat_manager")
 
@@ -47,17 +53,20 @@ class ChatManager:
         chat.reset_chat_history()
     """
 
-    def __init__(self,
-                 ui_info_log: Callable,
-                 ui_error_log: Callable,
-                 chat_repository_cls: Type["ChatRepository"] = ChatRepository,
-                 vector_store_index_cls: Type["VectorStoreIndexManager"] = VectorStoreIndexManager,
-                 ):
+    def __init__(
+        self,
+        ui_info_log: Callable,
+        ui_error_log: Callable,
+        chat_repository_cls: Optional[Type[Any]] = None,
+        vector_store_index_cls: Optional[Type[Any]] = None,
+    ):
         log.info("Initializing the ChatManager")
         self._ui_info_log = ui_info_log
         self._ui_error_log = ui_error_log
-        self.chat_repository = chat_repository_cls()
-        self._store = vector_store_index_cls()
+        chat_repo_cls = chat_repository_cls or ChatRepository
+        vector_store_cls = vector_store_index_cls or VectorStoreIndexManager
+        self.chat_repository = chat_repo_cls()
+        self._store = vector_store_cls()
         self._related_tasks = RelatedTasks()
         self._related_documents = RelatedDocuments()
 
@@ -92,7 +101,7 @@ class ChatManager:
         log.info("Documents are re-indexed")
         self._ui_info_log("Documents are re-indexed")
 
-    def predict(self, user_query: str) -> Iterator[list[list[str]]]:
+    def predict(self, user_query: str) -> Iterator[Any]:
         """
         Predict the response for the user query. It generates the response from the AI assistant based on the user query
         and the chat history.
@@ -104,18 +113,24 @@ class ChatManager:
         # Pull out the task and doc titles
         if not user_query:
             self._ui_error_log("Please, provide a valid query.")
-            return ("", self.chat_repository.get_chat_history(), *self.get_related_tasks_titles(),
-                    *self.get_related_documents_titles())
+            yield (
+                "",
+                self.chat_repository.get_chat_history(),
+                *self.get_related_tasks_titles(),
+                *self.get_related_documents_titles(),
+            )
+            return
 
         self._add_user_query_to_chat_history(user_query)
 
         # Grab the related docs from RAG
-        converted_history = self._convert_chat_history_to_chat_messages(self.chat_repository.get_chat_history())
+        converted_history = self._convert_chat_history_to_chat_messages(
+            self.chat_repository.get_chat_history()
+        )
 
         chat_engine = self._store.get_chat_engine()
         llm_response = chat_engine.stream_chat(
-            message=user_query,
-            chat_history=converted_history
+            message=user_query, chat_history=converted_history
         )
         log.debug("LLM response is generated")
 
@@ -130,34 +145,47 @@ class ChatManager:
                 related_doc_names.add(node.metadata["file_name"])
 
         # Truncate the sets to 4 items only
-        related_task_names = list(related_task_names)[:4]
-        related_doc_names = list(related_doc_names)[:4]
+        related_task_list = list(related_task_names)[:4]
+        related_doc_list = list(related_doc_names)[:4]
 
         # Update the related tasks 1-4, make sure if there is not enough related tasks, it is skipped
-        for i, file_name in enumerate(related_task_names):
-            related_task = Task(id=file_name, title=file_name.split(".")[0], status=TaskStatus.NA)
+        for i, file_name in enumerate(related_task_list):
+            related_task = Task(
+                id=file_name, title=file_name.split(".")[0], status=TaskStatus.NA
+            )
             setattr(self._related_tasks, f"task_{i + 1}", related_task)
 
         # Update the related documents 1-4
-        for i, file_name in enumerate(related_doc_names):
-            related_document = Document(id=file_name, title=file_name.split(".")[0], context="N/A")
+        for i, file_name in enumerate(related_doc_list):
+            related_document = Document(
+                id=file_name, title=file_name.split(".")[0], context="N/A"
+            )
             setattr(self._related_documents, f"document_{i + 1}", related_document)
 
         log.debug("Yielding the response")
         for chunk in llm_response.response_gen:
             self._append_assistant_response_to_chat_history(chunk)
-            yield ("", self.chat_repository.get_chat_history(), *self.get_related_tasks_titles(),
-                   *self.get_related_documents_titles())
+            yield (
+                "",
+                self.chat_repository.get_chat_history(),
+                *self.get_related_tasks_titles(),
+                *self.get_related_documents_titles(),
+            )
 
         log.info("Response is yielded")
 
     def get_related_tasks_titles(self) -> list[str]:
         """List of related tasks (titles)."""
-        return [getattr(self._related_tasks, f"task_{i}").title[:30] for i in range(1, 5)]
+        return [
+            getattr(self._related_tasks, f"task_{i}").title[:30] for i in range(1, 5)
+        ]
 
     def get_related_documents_titles(self) -> list[str]:
         """List of related documents (titles)."""
-        return [getattr(self._related_documents, f"document_{i}").title[:30] for i in range(1, 5)]
+        return [
+            getattr(self._related_documents, f"document_{i}").title[:30]
+            for i in range(1, 5)
+        ]
 
     def generate_task_summary(self, task_title_with_no: str):
         """Generate the task summary for the given task title."""
@@ -189,18 +217,25 @@ class ChatManager:
         chat_history[-1][1] += chunk
         self.chat_repository.update_chat_history(chat_history)
 
-    def _convert_chat_history_to_chat_messages(self, chat_history: list[list[str]]) -> list[ChatMessage]:
+    def _convert_chat_history_to_chat_messages(
+        self, chat_history: list[list[str]]
+    ) -> list[ChatMessage]:
         """Convert the chat history to the chat messages."""
         log.debug("Converting the chat history to the chat messages")
         chat_history_converted = []
         for user_message, assistant_message in chat_history:
-            chat_history_converted.append(ChatMessage(role="user", content=user_message))
+            chat_history_converted.append(
+                ChatMessage(role="user", content=user_message)
+            )
 
             if assistant_message:
-                chat_history_converted.append(ChatMessage(role="assistant", content=assistant_message))
+                chat_history_converted.append(
+                    ChatMessage(role="assistant", content=assistant_message)
+                )
 
         log.debug("Chat history is converted to the chat messages")
         return chat_history_converted
+
 
 # class OldChatManager:
 #     def __init__(self,
@@ -253,7 +288,7 @@ class ChatManager:
 #         self.ui_info_log(f"Generating summary for the document {doc.id}. Please, wait...")
 #         # TODO: Implement the task summary generation
 #
-#     def predict(self, user_query: str) -> Iterator[list[list[str]]]:
+#     def predict(self, user_query: str) -> Iterator[Any]:
 #         """
 #         Generator function to process the user query with LLM. It yields the response in a form of a chat message
 #         history. Each new iteration contains history of all messages up to this point. The latest message is updated

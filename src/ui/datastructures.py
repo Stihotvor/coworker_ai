@@ -23,10 +23,26 @@ class Task:
 
 @dataclass
 class RelatedTasks:
-    task_1: Task = field(default_factory=lambda: Task(id="TASK-0000", title="No data", status=TaskStatus.NA))
-    task_2: Task = field(default_factory=lambda: Task(id="TASK-0000", title="No data", status=TaskStatus.NA))
-    task_3: Task = field(default_factory=lambda: Task(id="TASK-0000", title="No data", status=TaskStatus.NA))
-    task_4: Task = field(default_factory=lambda: Task(id="TASK-0000", title="No data", status=TaskStatus.NA))
+    task_1: Task = field(
+        default_factory=lambda: Task(
+            id="TASK-0000", title="No data", status=TaskStatus.NA
+        )
+    )
+    task_2: Task = field(
+        default_factory=lambda: Task(
+            id="TASK-0000", title="No data", status=TaskStatus.NA
+        )
+    )
+    task_3: Task = field(
+        default_factory=lambda: Task(
+            id="TASK-0000", title="No data", status=TaskStatus.NA
+        )
+    )
+    task_4: Task = field(
+        default_factory=lambda: Task(
+            id="TASK-0000", title="No data", status=TaskStatus.NA
+        )
+    )
 
 
 @dataclass
@@ -38,7 +54,23 @@ class Document:
 
 @dataclass
 class RelatedDocuments:
-    document_1: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))
-    document_2: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))
-    document_3: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))
-    document_4: Document = field(default_factory=lambda: Document(id="DOC-0000", title="No data", context="No data"))
+    document_1: Document = field(
+        default_factory=lambda: Document(
+            id="DOC-0000", title="No data", context="No data"
+        )
+    )
+    document_2: Document = field(
+        default_factory=lambda: Document(
+            id="DOC-0000", title="No data", context="No data"
+        )
+    )
+    document_3: Document = field(
+        default_factory=lambda: Document(
+            id="DOC-0000", title="No data", context="No data"
+        )
+    )
+    document_4: Document = field(
+        default_factory=lambda: Document(
+            id="DOC-0000", title="No data", context="No data"
+        )
+    )

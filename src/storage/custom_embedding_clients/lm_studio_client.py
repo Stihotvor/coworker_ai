@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, List, Optional
 
 from llama_index.core.base.embeddings.base import BaseEmbedding
 from llama_index.core.bridge.pydantic import Field
@@ -15,21 +15,21 @@ class LMStudioEmbedding(BaseEmbedding):
         default=DEFAULT_EMBED_BATCH_SIZE,
         description="The batch size for embedding calls.",
         gt=0,
-        lte=2048,
+        le=2048,
     )
 
     def __init__(
-            self,
-            model_name: str,
-            base_url: str = "http://localhost:1234",
-            embed_batch_size: int = DEFAULT_EMBED_BATCH_SIZE,
-            callback_manager: Optional[CallbackManager] = None,
+        self,
+        model_name: str,
+        base_url: str = "http://localhost:1234",
+        embed_batch_size: int = DEFAULT_EMBED_BATCH_SIZE,
+        callback_manager: Optional[CallbackManager] = None,
     ) -> None:
-        super().__init__(
+        super().__init__(  # type: ignore[call-arg]
             model_name=model_name,
             base_url=base_url,
             embed_batch_size=embed_batch_size,
-            callback_manager=callback_manager,
+            callback_manager=callback_manager,  # type: ignore[arg-type]
         )
 
     @classmethod
@@ -65,15 +65,16 @@ class LMStudioEmbedding(BaseEmbedding):
         """Asynchronously get text embeddings."""
         return self._get_text_embeddings(texts)
 
-    def get_general_text_embedding(self, prompt: str, dimensions: Optional[int] = None) -> List[float]:
+    def get_general_text_embedding(
+        self, prompt: str, dimensions: Optional[int] = None
+    ) -> List[float]:
         """Get LMStudio embedding."""
         from openai import OpenAI
 
         client = OpenAI(base_url=self.base_url, api_key="lm-studio")
         prompt = prompt.replace("\n", " ")
-        response = client.embeddings.create(
-            input=[prompt],
-            model=self.model_name,
-            dimensions=dimensions
-        )
+        create_kwargs: dict[str, Any] = {"input": [prompt], "model": self.model_name}
+        if dimensions is not None:
+            create_kwargs["dimensions"] = dimensions
+        response = client.embeddings.create(**create_kwargs)
         return response.data[0].embedding
